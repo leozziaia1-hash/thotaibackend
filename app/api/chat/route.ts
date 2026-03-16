@@ -8,6 +8,8 @@ export async function POST(req: Request) {
     const { prompt, profile, systemPrompt, imageBase64, isVision } = await req.json();
 
     const apiKey = process.env.GROQ_API_KEY;
+    console.log('API Key exists:', !!apiKey);
+    console.log('API Key prefix:', apiKey?.substring(0, 10));
     if (!apiKey) {
       return Response.json({ error: 'GROQ_API_KEY no configurada' }, { status: 500 });
     }
@@ -36,7 +38,7 @@ export async function POST(req: Request) {
     }
 
     const { text } = await generateText({
-      model: groq(modelToUse, { apiKey }),
+      model: groq(modelToUse),
       system: systemPrompt || `Eres el subagente ADAPTADOR de ThotAI. Tu objetivo es procesar el texto educativo ingresado y adaptarlo estrictamente al perfil cognitivo y nivel educativo indicado.\n\nPerfil Actual: ${profile}.\n\nREGLAS ESTRICTAS:\n1. NO debes usar formato Markdown crudo (ni #, ni *, ni -). Nada.\n2. Tu respuesta DEBE ser un objeto JSON válido con la siguiente estructura exacta:\n{\n  "tituloAdaptado": "Un título adecuado al perfil",\n  "parrafos": ["Párrafo adaptado 1", "Párrafo adaptado 2..."],\n  "consejoEducador": "Breve recomendación metodológica para el profesor"\n}\n3. Asegúrate de que el JSON sea perfectamente parseable por JSON.parse().`,
       messages,
       temperature: 0.2,

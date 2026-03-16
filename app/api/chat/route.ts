@@ -40,8 +40,9 @@ export async function POST(req: Request) {
     return Response.json({ result: text });
   } catch (error) {
     console.error('Error en API Groq:', error);
+    const errorMessage = error instanceof Error ? error.message : String(error);
     return Response.json(
-      { error: 'Error al procesar la solicitud' },
+      { error: 'Error al procesar la solicitud', details: errorMessage },
       { status: 500 }
     );
   }

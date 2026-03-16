@@ -37,7 +37,7 @@ git push -u origin main
 2. Importa el repo `thotai-backend`
 3. En Environment Variables añade:
    - **Name**: `GROQ_API_KEY`
-   - **Value**: `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`
+   - **Value**: [TU_API_KEY_DE_GROQ]
 4. Deploy
 
 ## Paso 3: Actualizar URL en la App

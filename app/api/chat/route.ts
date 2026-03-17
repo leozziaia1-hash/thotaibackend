@@ -92,6 +92,8 @@ ESTRUCTURA DEL JSON:
       system: systemMessage,
       messages,
       temperature: 0.1,
+      // @ts-ignore - Forzar formato JSON en Groq
+      response_format: { type: 'json_object' },
     });
 
     return Response.json({ result: text });

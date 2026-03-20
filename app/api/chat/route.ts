@@ -47,28 +47,31 @@ export async function POST(req: Request) {
     let systemMessage = '';
 
     if (agent === 'evaluador') {
+      const difficultyDesc = difficulty === 'FÁCIL'
+        ? 'Evalúa retención de memoria semántica y conceptos base. Las opciones falsas deben ser términos hermanos o conceptos relacionados pero incorrectos.'
+        : difficulty === 'DIFÍCIL'
+        ? 'Evalúa el pensamiento crítico de segundo orden, análisis y síntesis. Exige discriminar entre distinciones vitales. Dos opciones deben parecer correctas, pero una es técnicamente superior.'
+        : 'Plantea micro-escenarios resolutivos o casos prácticos donde la teoría debe ser aplicada en el mundo real. Evalúa comprensión y aplicación.';
+
       systemMessage = `Eres un Arquitecto de Evaluación Educativa Senior y Psicómetra Clínico de Élite.
 Tu misión exclusiva es diseñar un Ecosistema de Evaluación de Alta Fidelidad centrado ÚNICAMENTE en el nivel de dificultad: ${difficulty}.
 
 INSTRUCCIONES CLÍNICAS DE EVALUACIÓN Y PSICOMETRÍA:
 1. FOCO EN DIFICULTAD ${difficulty} (ESTRICTO):
-   ${difficulty === 'FÁCIL' ? '- Evalúa retención de memoria semántica y conceptos base. Las opciones falsas deben ser términos hermanos o conceptos relacionados pero incorrectos.' : ''}
-   ${difficulty === 'MEDIO' ? '- Plantea micro-escenarios resolutivos o casos prácticos donde la teoría debe ser aplicada en el mundo real. Evalúa comprensión y aplicación.' : ''}
-   ${difficulty === 'DIFÍCIL' ? '- Evalúa el pensamiento crítico de segundo orden, análisis y síntesis. Exige discriminar entre distinciones vitales. Dos opciones deben parecer correctas, pero una es técnicamente superior.' : ''}
+   ${difficultyDesc}
 
 2. INGENIERÍA DE DISTRACTORES:
    - NUNCA uses "Ninguna de las anteriores", "Todas las anteriores" o "A y B son correctas".
    - Todo distractor debe representar un sesgo cognitivo común o un error frecuente de los estudiantes.
+   - Las opciones deben tener longitudes sintácticas y estilos similares.
 
 3. JUSTIFICACIONES PEDAGÓGICAS PROFUNDAS:
    - Explica el MECANISMO RACIONAL profundo de por qué la respuesta es correcta y por qué las trampas más tentadoras representaban falacias de entendimiento.
 
-4. FLASHCARDS DE ALTO IMPACTO (Recall Activo):
-   - Concepto atómico -> Significado destilado, Principio Funcional y un Ejemplo o Contraste clave.
-
 REGLAS DE FORMATO:
 1. Responde EXCLUSIVAMENTE con el objeto JSON. Sin backticks de markdown.
 2. Genera un array llamado "preguntas" con EXACTAMENTE 20 ítems de dificultad ${difficulty}.
+3. "respuestaCorrecta" DEBE ser el ÍNDICE numérico (0, 1, 2 o 3) de la opción correcta dentro del array "opciones". NO devuelvas texto, solo el número.
 
 ESTRUCTURA EXACTA DE SALIDA REQUERIDA:
 {
@@ -78,12 +81,11 @@ ESTRUCTURA EXACTA DE SALIDA REQUERIDA:
     {
       "pregunta": "Enunciado de la pregunta",
       "opciones": ["Opción A", "Opción B", "Opción C", "Opción D"],
-      "respuestaCorrecta": "Texto exacto de la opción correcta",
+      "respuestaCorrecta": 0,
       "justificacion": "Explicación profunda de la lógica",
       "dificultad": "${difficulty}"
     }
-  ],
-  "flashcards": [{"concepto": "Término clave", "definicion": "Definición activa y funcional"}]
+  ]
 }`;
 
     } else {

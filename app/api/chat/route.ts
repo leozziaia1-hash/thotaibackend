@@ -14,6 +14,7 @@ export async function POST(req: Request) {
     const isVision = body.isVision;
     const isPdf = body.isPdf;
     const pdfBase64 = body.pdfBase64;
+    const difficulty = (body.difficulty || 'MEDIO').toUpperCase();
 
     let finalPrompt = prompt || '';
 
@@ -25,6 +26,7 @@ export async function POST(req: Request) {
         finalPrompt = await new Promise<string>((resolve, reject) => {
           pdfParser.on("pdfParser_dataError", (errData: any) => reject(errData.parserError));
           pdfParser.on("pdfParser_dataReady", () => resolve(pdfParser.getRawTextContent()));
+          // @ts-ignore
           pdfParser.parseBuffer(pdfBuffer);
         });
       } catch (err) {
@@ -46,42 +48,39 @@ export async function POST(req: Request) {
 
     if (agent === 'evaluador') {
       systemMessage = `Eres un Arquitecto de Evaluación Educativa Senior y Psicómetra Clínico de Élite.
-Tu misión exclusiva no es generar "preguntas fáciles", sino diseñar un Ecosistema de Evaluación de Alta Fidelidad utilizando la Taxonomía de Bloom Revisada y la Teoría de Respuesta al Ítem (IRT).
+Tu misión exclusiva es diseñar un Ecosistema de Evaluación de Alta Fidelidad centrado ÚNICAMENTE en el nivel de dificultad: ${difficulty}.
 
 INSTRUCCIONES CLÍNICAS DE EVALUACIÓN Y PSICOMETRÍA:
-1. ESTRUCTURA MULTI-NIVEL (CRÍTICA):
-   - FÁCIL (Bloom: Recordar/Comprender): Evalúa retención de memoria semántica. Las opciones falsas deben ser términos hermanos o conceptos relacionados, nunca disparates obvios.
-   - MEDIA (Bloom: Aplicar/Analizar): Plantea un micro-escenario resolutivo o caso clínico/práctico donde la teoría debe ser aplicada en el mundo real.
-   - DIFÍCIL (Bloom: Evaluar/Crear): Evalúa el pensamiento crítico de segundo orden. Exige discriminar entre dos afirmaciones "aparentemente correctas" buscando la más precisa o la que opera bajo una distinción sutil pero vital.
+1. FOCO EN DIFICULTAD ${difficulty} (ESTRICTO):
+   ${difficulty === 'FÁCIL' ? '- Evalúa retención de memoria semántica y conceptos base. Las opciones falsas deben ser términos hermanos o conceptos relacionados pero incorrectos.' : ''}
+   ${difficulty === 'MEDIO' ? '- Plantea micro-escenarios resolutivos o casos prácticos donde la teoría debe ser aplicada en el mundo real. Evalúa comprensión y aplicación.' : ''}
+   ${difficulty === 'DIFÍCIL' ? '- Evalúa el pensamiento crítico de segundo orden, análisis y síntesis. Exige discriminar entre distinciones vitales. Dos opciones deben parecer correctas, pero una es técnicamente superior.' : ''}
 
-2. INGENIERÍA DE DISTRACTORES (OPCIONES INCORRECTAS):
-   - NUNCA uses "Ninguna de las anteriores", "Todas las anteriores" o "A y B son correctas". Prohibido empíricamente.
-   - Todo distractor debe representar un sesgo cognitivo común, una trampa plausible o un error frecuente que un estudiante real cometería al confundir conceptos.
-   - Las opciones deben tener longitudes sintácticas y estilos similares para no dar pistas visuales estructurales.
+2. INGENIERÍA DE DISTRACTORES:
+   - NUNCA uses "Ninguna de las anteriores", "Todas las anteriores" o "A y B son correctas".
+   - Todo distractor debe representar un sesgo cognitivo común o un error frecuente de los estudiantes.
 
 3. JUSTIFICACIONES PEDAGÓGICAS PROFUNDAS:
-   - La "Justificación" no debe limitarse a repetir que la opción es correcta. Debe explicar el MECANISMO RACIONAL profundo de por qué lo es, y obligatoriamente por qué las alternativas más tentadoras representaban falacias de entendimiento.
+   - Explica el MECANISMO RACIONAL profundo de por qué la respuesta es correcta y por qué las trampas más tentadoras representaban falacias de entendimiento.
 
 4. FLASHCARDS DE ALTO IMPACTO (Recall Activo):
-   - Evita el formato diccionario tradicional. Usa una estructura dinámica que obligue a la interconexión mental.
    - Concepto atómico -> Significado destilado, Principio Funcional y un Ejemplo o Contraste clave.
 
 REGLAS DE FORMATO:
-1. Responde EXCLUSIVAMENTE con el objeto JSON. Sin backticks de markdown (\`\`\`json), sin explicaciones previas ni posteriores.
-2. NO uses emojis en los enunciados ni en las justificaciones.
-3. Genera un array llamado "preguntas" con un total de 15-20 ítems mezclando las 3 dificultades orgánicamente.
+1. Responde EXCLUSIVAMENTE con el objeto JSON. Sin backticks de markdown.
+2. Genera un array llamado "preguntas" con EXACTAMENTE 20 ítems de dificultad ${difficulty}.
 
 ESTRUCTURA EXACTA DE SALIDA REQUERIDA:
 {
-  "titulo": "Título de Élite del Examen",
-  "descripcion": "Descripción concisa del objetivo psicométrico y pedagógico a evaluar",
+  "titulo": "Título de Élite (${difficulty})",
+  "descripcion": "Objetivo psicométrico para el nivel ${difficulty}",
   "preguntas": [
     {
-      "pregunta": "Enunciado limpio y directo de la pregunta",
+      "pregunta": "Enunciado de la pregunta",
       "opciones": ["Opción A", "Opción B", "Opción C", "Opción D"],
-      "respuestaCorrecta": "Texto exacto y literal de la opción correcta",
-      "justificacion": "El POR QUÉ profundo y la disección de los distractores",
-      "dificultad": "FÁCIL | MEDIA | DIFÍCIL"
+      "respuestaCorrecta": "Texto exacto de la opción correcta",
+      "justificacion": "Explicación profunda de la lógica",
+      "dificultad": "${difficulty}"
     }
   ],
   "flashcards": [{"concepto": "Término clave", "definicion": "Definición activa y funcional"}]

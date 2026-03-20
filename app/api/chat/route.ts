@@ -1,7 +1,7 @@
 import { generateText } from 'ai';
 import { groq } from '@ai-sdk/groq';
-const pdfParseLib = require('pdf-parse');
-const pdfParse = pdfParseLib.default || pdfParseLib;
+// @ts-ignore
+import PDFParser from 'pdf2json';
 export const maxDuration = 60;
 
 export async function POST(req: Request) {
@@ -20,8 +20,12 @@ export async function POST(req: Request) {
     if (isPdf && pdfBase64) {
       try {
         const pdfBuffer = Buffer.from(pdfBase64, 'base64');
-        const pdfData = await pdfParse(pdfBuffer);
-        finalPrompt = pdfData.text;
+        const pdfParser = new PDFParser(null, 1);
+        finalPrompt = await new Promise<string>((resolve, reject) => {
+          pdfParser.on("pdfParser_dataError", (errData: any) => reject(errData.parserError));
+          pdfParser.on("pdfParser_dataReady", () => resolve(pdfParser.getRawTextContent()));
+          pdfParser.parseBuffer(pdfBuffer);
+        });
       } catch (err) {
         return Response.json({ error: 'Failed to extract text from PDF: ' + String(err) }, { status: 400 });
       }

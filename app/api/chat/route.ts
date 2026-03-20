@@ -20,6 +20,7 @@ export async function POST(req: Request) {
     if (isPdf && pdfBase64) {
       try {
         const pdfBuffer = Buffer.from(pdfBase64, 'base64');
+        // @ts-ignore
         const pdfParser = new PDFParser(null, 1);
         finalPrompt = await new Promise<string>((resolve, reject) => {
           pdfParser.on("pdfParser_dataError", (errData: any) => reject(errData.parserError));

@@ -70,7 +70,7 @@ INSTRUCCIONES CLÍNICAS DE EVALUACIÓN Y PSICOMETRÍA:
 
 REGLAS DE FORMATO:
 1. Responde EXCLUSIVAMENTE con el objeto JSON. Sin backticks de markdown.
-2. Genera un array llamado "preguntas" con EXACTAMENTE 20 ítems de dificultad ${difficulty}.
+2. Genera un array llamado "preguntas" con EXACTAMENTE 15 ítems de dificultad ${difficulty}.
 3. "respuestaCorrecta" DEBE ser el ÍNDICE numérico (0, 1, 2 o 3) de la opción correcta dentro del array "opciones". NO devuelvas texto, solo el número.
 
 ESTRUCTURA EXACTA DE SALIDA REQUERIDA:

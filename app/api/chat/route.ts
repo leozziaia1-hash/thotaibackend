@@ -1,6 +1,7 @@
 import { generateText } from 'ai';
 import { groq } from '@ai-sdk/groq';
-const pdfParse = require('pdf-parse');
+const pdfParseLib = require('pdf-parse');
+const pdfParse = pdfParseLib.default || pdfParseLib;
 export const maxDuration = 60;
 
 export async function POST(req: Request) {
